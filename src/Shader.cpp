@@ -96,7 +96,9 @@ Shader::Shader(unsigned int id) : id(id) {}
 
 Shader::~Shader() { glDeleteProgram(id); }
 
-void Shader::bind() { glUseProgram(id); }
+void Shader::bind() const { glUseProgram(id); }
+
+void Shader::unbind() const { glUseProgram(0); }
 
 void Shader::uniformMat4(const std::string &name, const glm::mat4 &matrix) {
     int location = glGetUniformLocation(id, name.c_str());

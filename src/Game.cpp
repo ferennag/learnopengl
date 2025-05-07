@@ -8,6 +8,7 @@
 bool Game::initialize() {
     mesh = Mesh::createCube();
     shader = Shader::load("resources/shaders/simple.vert", "resources/shaders/simple.frag");
+    texture = Texture::load("resources/textures/brick.jpg");
     model = glm::identity<glm::mat4>();
     view = glm::lookAt(glm::vec3{0.0f, 0.0f, -8.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
     return true;
@@ -25,10 +26,12 @@ void Game::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shader->bind();
+    glBindTexture(GL_TEXTURE_2D, texture->getId());
     model = glm::rotate(model, glm::radians(0.5f), {1.0f, 1.0f, 0.0f});
     auto mvp = projection * view * model;
     shader->uniformMat4("mvp", mvp);
     mesh->render();
+    shader->unbind();
 }
 
 void Game::destroy() {}

@@ -13,7 +13,9 @@ class Shader {
     ~Shader();
     static std::shared_ptr<Shader> load(const std::string &vertexPath, const std::string fragmentPath);
 
-    void bind();
+    void bind() const;
+
+    void unbind() const;
 
     void uniformMat4(const std::string &name, const glm::mat4 &matrix);
 };

@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_video.h>
 #include <cstdio>
 // clang-format on
 
@@ -13,6 +14,7 @@ bool Application::initialize() {
         return false;
     }
 
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
