@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Light.h"
 #include "Model.h"
 #include "Shader.h"
 #include <glm/glm.hpp>
@@ -10,7 +11,10 @@ class Game {
     int width, height;
     std::shared_ptr<Shader> shader;
     std::shared_ptr<Model> dragon;
-    glm::mat4 projection, view;
+    glm::mat4 projection;
+    glm::vec3 eye;
+
+    PointLight light;
 
   public:
     Game() = default;

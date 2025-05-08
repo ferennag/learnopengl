@@ -104,3 +104,13 @@ void Shader::uniformMat4(const std::string &name, const glm::mat4 &matrix) {
     int location = glGetUniformLocation(id, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
 }
+
+void Shader::uniformVec3(const std::string &name, const glm::vec3 &vector) {
+    int location = glGetUniformLocation(id, name.c_str());
+    glUniform3fv(location, 1, &vector[0]);
+}
+
+void Shader::uniformPointLight(const std::string &name, const PointLight &light) {
+    uniformVec3(name + ".position", light.position);
+    uniformVec3(name + ".color", light.color);
+}
