@@ -1,17 +1,29 @@
 #pragma once
 
-#include <memory>
+struct Vertex {
+    float position[3];
+    float normal[3];
+    float uv[2];
+};
+
+struct Face {
+    unsigned int indices[3];
+};
 
 class Mesh {
   private:
-    unsigned int vao, vbo, numVertices;
-
-    Mesh(unsigned int vao, unsigned int vbo, unsigned int numVertices);
+    Vertex *vertices;
+    Face *faces;
+    unsigned int numVertices, numFaces;
+    unsigned int vao, vbo, ebo;
 
   public:
-    static std::shared_ptr<Mesh> createCube();
+    Mesh() = default;
 
-    void update();
-    void render();
+    void initialize(Vertex *vertices, unsigned int numVertices, Face *faces, unsigned int numFaces);
+    void cleanup();
+
     ~Mesh();
+
+    void render() const;
 };

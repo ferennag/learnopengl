@@ -6,15 +6,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 bool Game::initialize() {
-    mesh = Mesh::createCube();
     shader = Shader::load("resources/shaders/simple.vert", "resources/shaders/simple.frag");
-    texture = Texture::load("resources/textures/brick.jpg");
-    model = glm::identity<glm::mat4>();
-    view = glm::lookAt(glm::vec3{0.0f, 0.0f, -8.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
+    dragon = Model::load("resources/models/xyzrgb_dragon.obj");
+    view = glm::lookAt(glm::vec3{0.0f, 0.0f, -200.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f});
     return true;
 }
 
-void Game::update() {}
+void Game::update() { dragon->update(); }
 
 void Game::render() {
     glEnable(GL_DEPTH_TEST);
@@ -26,11 +24,9 @@ void Game::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shader->bind();
-    glBindTexture(GL_TEXTURE_2D, texture->getId());
-    model = glm::rotate(model, glm::radians(0.5f), {1.0f, 1.0f, 0.0f});
-    auto mvp = projection * view * model;
+    auto mvp = projection * view * dragon->getTransform();
     shader->uniformMat4("mvp", mvp);
-    mesh->render();
+    dragon->render();
     shader->unbind();
 }
 
@@ -40,5 +36,5 @@ void Game::resized(int width, int height) {
     glViewport(0, 0, width, height);
     this->width = width;
     this->height = height;
-    this->projection = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 100.0f);
+    this->projection = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 1000.0f);
 }
