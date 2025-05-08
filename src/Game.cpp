@@ -30,6 +30,7 @@ void Game::render() {
     auto vp = projection * view;
     shader->uniformMat4("viewProj", vp);
     shader->uniformMat4("model", dragon->getTransform());
+    shader->uniformMat3("inverseTransposeModel", dragon->getInverseTransposeTransform());
     shader->uniformVec3("eye", eye);
     shader->uniformPointLight("light", light);
     dragon->render();
@@ -42,5 +43,5 @@ void Game::resized(int width, int height) {
     glViewport(0, 0, width, height);
     this->width = width;
     this->height = height;
-    this->projection = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.1f, 1000.0f);
+    this->projection = glm::perspective(glm::radians(60.0f), (float)width / (float)height, 0.5f, 1000.0f);
 }

@@ -18,6 +18,7 @@ class Shader {
 
     void unbind() const;
 
+    void uniformMat3(const std::string &name, const glm::mat3 &matrix);
     void uniformMat4(const std::string &name, const glm::mat4 &matrix);
     void uniformVec3(const std::string &name, const glm::vec3 &vector);
     void uniformPointLight(const std::string &name, const PointLight &light);

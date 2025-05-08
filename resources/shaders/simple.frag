@@ -14,17 +14,21 @@ layout(location = 1) in vec3 normal;
 out vec4 FragColor;
 
 void main() {
-    vec3 surface = vec3(0.8f, 0.5f, 0.2f);
-    vec3 cool = vec3(0.0f, 0.0f, 0.55f) + 0.25f * surface;
+    vec3 surface = vec3(0.1f, 0.1f, 0.1f);
+    vec3 cool = vec3(0.0f, 0.0f, 0.25f) + 0.25f * surface;
     vec3 warm = vec3(0.3f, 0.3f, 0.0f) + 0.25f * surface;
     vec3 highlight = vec3(1.0f, 1.0f, 1.0f);
 
-    vec3 v = normalize(eye - worldPos);
-    vec3 l = normalize(light.position - worldPos);
-    float t = (dot(normal, l) + 1.0f) / 2.0f;
-    vec3 r = 2 * dot(normal, l) * normal - l;
-    float s = clamp((100 * dot(r, v) - 97), 0.0f, 1.0f);
-    vec3 shaded = s * highlight + (1 - s) * (t * warm + (1 - t) * cool);
+    vec3 n = normalize(normal);
+    vec3 v = normalize(eye - worldPos); // eye vector from vertex
+    vec3 l = normalize(light.position - worldPos); // light vector from vertex
+    float t = (dot(n, l) + 1.0f) / 2.0f; // Calculates the angle between the light and the normal
+    vec3 r = reflect(-l, n); // Calculates the vector of the reflected light
+    float s = clamp((100 * dot(r, v) - 97), 0.0f, 1.0f); // Calculates the amount of highlight (based on eye vector and reflected light angle)
 
-    FragColor = vec4(shaded, 1.0f);
+    // mix() interpolates linearly between 2 colors, using t as weight (small t cooler color, bigger t means warmer color)
+    vec3 tone = mix(cool, warm, t);
+    vec3 color = mix(tone, highlight, s);
+
+    FragColor = vec4(color, 1.0f);
 }

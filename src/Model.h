@@ -21,4 +21,5 @@ class Model {
     void render() const;
 
     glm::mat4 getTransform() const { return transform; }
+    glm::mat3 getInverseTransposeTransform() const { return glm::transpose(glm::inverse(glm::mat3(transform))); }
 };

@@ -17,7 +17,7 @@ Model::~Model() {}
 std::shared_ptr<Model> Model::load(const std::string &path) {
     Assimp::Importer importer;
     const aiScene *scene =
-        importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals);
+        importer.ReadFile(path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenSmoothNormals);
 
     if (scene == nullptr) {
         SDL_Log("Failed to load model: %s", path.c_str());

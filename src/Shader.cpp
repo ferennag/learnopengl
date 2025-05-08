@@ -100,6 +100,11 @@ void Shader::bind() const { glUseProgram(id); }
 
 void Shader::unbind() const { glUseProgram(0); }
 
+void Shader::uniformMat3(const std::string &name, const glm::mat3 &matrix) {
+    int location = glGetUniformLocation(id, name.c_str());
+    glUniformMatrix3fv(location, 1, GL_FALSE, &matrix[0][0]);
+}
+
 void Shader::uniformMat4(const std::string &name, const glm::mat4 &matrix) {
     int location = glGetUniformLocation(id, name.c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
