@@ -12,8 +12,8 @@ struct Face {
 
 class Mesh {
   private:
-    Vertex *vertices;
-    Face *faces;
+    Vertex *vertices = 0;
+    Face *faces = 0;
     unsigned int numVertices, numFaces;
     unsigned int vao, vbo, ebo;
 
