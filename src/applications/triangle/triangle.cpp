@@ -46,9 +46,6 @@ std::string TriangleApplication::GetName() const {
   return "Basic Triangle";
 }
 
-void TriangleApplication::Update() {
-}
-
 void TriangleApplication::Render() {
   mShader->Bind();
   glBindVertexArray(mVao);

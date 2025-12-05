@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/keyboard.h"
 #include <GL/glew.h>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -23,7 +24,8 @@ public:
 
   virtual std::string GetName() const = 0;
 
-  virtual void Update() = 0;
+  virtual void Update(const KeyboardState &keyboard) {
+  }
 
   virtual void Render() = 0;
 };

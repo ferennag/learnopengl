@@ -15,7 +15,5 @@ public:
 
   std::string GetName() const override;
 
-  void Update() override;
-
   void Render() override;
 };

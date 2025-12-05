@@ -76,10 +76,36 @@ SDL_AppResult SDL_AppEvent(void *state, SDL_Event *event) {
       }
       break;
     }
+    case SDL_EVENT_KEY_UP:
     case SDL_EVENT_KEY_DOWN: {
+      bool pressed = event->key.down;
       switch (event->key.key) {
         case SDLK_ESCAPE:
           return SDL_APP_SUCCESS;
+        case SDLK_W:
+        case SDLK_UP: {
+          appState->keyboard.pressed[static_cast<int>(Key::Up)] = pressed;
+          break;
+        }
+        case SDLK_S:
+        case SDLK_DOWN: {
+          appState->keyboard.pressed[static_cast<int>(Key::Down)] = pressed;
+          break;
+        }
+        case SDLK_A:
+        case SDLK_LEFT: {
+          appState->keyboard.pressed[static_cast<int>(Key::Left)] = pressed;
+          break;
+        }
+        case SDLK_D:
+        case SDLK_RIGHT: {
+          appState->keyboard.pressed[static_cast<int>(Key::Right)] = pressed;
+          break;
+        }
+        case SDLK_SPACE: {
+          appState->keyboard.pressed[static_cast<int>(Key::Jump)] = pressed;
+          break;
+        }
       }
       break;
     }
@@ -98,7 +124,7 @@ SDL_AppResult SDL_AppIterate(void *state) {
   glClearColor(0.05f, 0.05f, 0.15f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  appState->CurrentApplication()->Update();
+  appState->CurrentApplication()->Update(appState->keyboard);
   appState->CurrentApplication()->Render();
   appState->gui->Render();
 
