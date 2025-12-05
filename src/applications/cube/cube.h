@@ -22,4 +22,6 @@ public:
   void Update(const KeyboardState &keyboard) override;
 
   void Render() override;
+
+  void HandleMouseEvent(float relX, float relY) override;
 };

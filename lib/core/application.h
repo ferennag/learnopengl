@@ -24,6 +24,9 @@ public:
 
   virtual std::string GetName() const = 0;
 
+  virtual void HandleMouseEvent(float relX, float relY) {
+  }
+
   virtual void Update(const KeyboardState &keyboard) {
   }
 

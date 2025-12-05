@@ -2,6 +2,8 @@
 #include <memory>
 #include <vector>
 
+#include "SDL3/SDL_events.h"
+#include "SDL3/SDL_init.h"
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_video.h"
 #include "app_gui.h"
@@ -55,13 +57,17 @@ SDL_AppResult SDL_AppInit(void **state, int argc, char **argv) {
   auto guiRenderer = std::make_shared<AppGuiRenderer>(appState);
   appState->gui->AddRenderer(guiRenderer);
 
+  appState->mouseGrabbed = false;
+
   return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppEvent(void *state, SDL_Event *event) {
   AppState *appState = static_cast<AppState *>(state);
 
-  appState->gui->HandleEvent(event);
+  if (appState->gui->HandleEvent(event)) {
+    return SDL_APP_CONTINUE;
+  }
 
   switch (event->type) {
     case SDL_EVENT_QUIT: {
@@ -76,10 +82,24 @@ SDL_AppResult SDL_AppEvent(void *state, SDL_Event *event) {
       }
       break;
     }
+    case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+      SDL_SetWindowRelativeMouseMode(appState->window, true);
+      break;
+    }
+    case SDL_EVENT_MOUSE_MOTION: {
+      if (appState->CurrentApplication()) {
+        appState->CurrentApplication()->HandleMouseEvent(event->motion.xrel, event->motion.yrel);
+      }
+      break;
+    }
     case SDL_EVENT_KEY_UP:
     case SDL_EVENT_KEY_DOWN: {
       bool pressed = event->key.down;
       switch (event->key.key) {
+        case SDLK_Q: {
+          SDL_SetWindowRelativeMouseMode(appState->window, false);
+          break;
+        }
         case SDLK_ESCAPE:
           return SDL_APP_SUCCESS;
         case SDLK_W:

@@ -16,7 +16,7 @@ public:
 
   void AddRenderer(std::shared_ptr<GuiRenderer> renderer);
 
-  void HandleEvent(SDL_Event *event);
+  bool HandleEvent(SDL_Event *event);
 
   void Render();
 };

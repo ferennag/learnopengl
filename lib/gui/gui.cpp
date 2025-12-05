@@ -22,8 +22,9 @@ Gui::~Gui() {
   ImGui::DestroyContext();
 }
 
-void Gui::HandleEvent(SDL_Event *event) {
+bool Gui::HandleEvent(SDL_Event *event) {
   ImGui_ImplSDL3_ProcessEvent(event);
+  return ImGui::GetIO().WantCaptureMouse;
 }
 
 void Gui::AddRenderer(std::shared_ptr<GuiRenderer> renderer) {

@@ -58,6 +58,10 @@ std::string CubeApplication::GetName() const {
   return "Basic Cube";
 }
 
+void CubeApplication::HandleMouseEvent(float relX, float relY) {
+  mCamera->HandleMouseEvent(glm::vec2{relX, relY});
+}
+
 void CubeApplication::Update(const KeyboardState &keyboard) {
   mCamera->HandleKeyboardEvent(keyboard);
 }

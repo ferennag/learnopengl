@@ -15,6 +15,7 @@ struct AppState {
   std::vector<std::unique_ptr<Application>> applications;
   int currentApplication;
   int selectedApplication;
+  bool mouseGrabbed;
 
   std::unique_ptr<Gui> gui;
 
