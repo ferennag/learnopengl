@@ -1,0 +1,78 @@
+#include "fps_camera.h"
+
+#include "glm/ext/matrix_transform.hpp"
+
+FPSCamera::FPSCamera(const glm::vec3 &position) : Camera(), mPosition(position) {
+  mFront = glm::vec3{0.0f, 0.0f, -1.0f};
+  mUp = glm::vec3{0.0f, 1.0f, 0.0f};
+
+  mView = glm::lookAt(mPosition, mFront, mUp);
+  mYaw = -90.0f;
+  mPitch = 0.0f;
+}
+
+void FPSCamera::HandleKeyboardEvent(const KeyboardState &keyboard) {
+  float speed = 0.1f;
+  if (keyboard.pressed[static_cast<int>(Key::Left)]) {
+    auto left = glm::normalize(glm::cross(mFront, mUp));
+    mPosition -= speed * left;
+  }
+
+  if (keyboard.pressed[static_cast<int>(Key::Right)]) {
+    auto left = glm::normalize(glm::cross(mFront, mUp));
+    mPosition += speed * left;
+  }
+
+  if (keyboard.pressed[static_cast<int>(Key::Up)]) {
+    mPosition += speed * mFront;
+  }
+
+  if (keyboard.pressed[static_cast<int>(Key::Down)]) {
+    mPosition -= speed * mFront;
+  }
+
+  if (keyboard.pressed[static_cast<int>(Key::Jump)]) {
+    mPosition += speed * mUp;
+  }
+
+  if (keyboard.pressed[static_cast<int>(Key::Crouch)]) {
+    mPosition -= speed * mUp;
+  }
+
+  mView = glm::lookAt(mPosition, mPosition + mFront, mUp);
+}
+
+void FPSCamera::HandleMouseEvent(const glm::vec2 &relative) {
+  float turnSpeed = 0.05f;
+  mYaw += relative.x * turnSpeed;
+  mPitch -= relative.y * turnSpeed;
+
+  if (mPitch > 89.0f) {
+    mPitch = 89.0f;
+  }
+  if (mPitch < -89.0f) {
+    mPitch = -89.0f;
+  }
+
+  glm::vec3 direction{};
+  direction.x = cos(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+  direction.y = sin(glm::radians(mPitch));
+  direction.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+  mFront = glm::normalize(direction);
+
+  mView = glm::lookAt(mPosition, mPosition + mFront, mUp);
+}
+
+glm::mat4 FPSCamera::GetView() const {
+  return mView;
+}
+
+glm::vec3 FPSCamera::GetPosition() const {
+  return mPosition;
+}
+
+void FPSCamera::LookAt(const glm::vec3 &target) {
+  mFront = glm::normalize(target - mPosition);
+  mPitch = glm::degrees(asin(mFront.y));
+  mYaw = glm::degrees(atan2(mFront.z, mFront.x));
+}
