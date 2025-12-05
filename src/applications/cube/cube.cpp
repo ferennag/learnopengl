@@ -1,5 +1,7 @@
 #include "cube.h"
 #include "core/application.h"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/trigonometric.hpp"
 #include <cstddef>
 
 struct Vertex {
@@ -13,13 +15,17 @@ static const Vertex vertices[]{
     {{0.0f, 0.5f, 0.0f}, {1.0f, 0.0f, 1.0f}},
 };
 
-bool CubeApplication::Load() {
+bool CubeApplication::Load(int width, int height) {
+  Application::Load(width, height);
+
   if (!mShader) {
     mShader = Shader::Load("assets/shaders/triangle.vert", "assets/shaders/triangle.frag");
     if (!mShader) {
       return false;
     }
   }
+
+  mProjection = glm::perspective(glm::radians(60.0f), GetAspectRatio(), 0.1f, 100.0f);
 
   glCreateVertexArrays(1, &mVao);
   glCreateBuffers(1, &mVbo);

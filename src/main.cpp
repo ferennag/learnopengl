@@ -24,8 +24,10 @@ SDL_AppResult SDL_AppInit(void **state, int argc, char **argv) {
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-  appState->window =
-      SDL_CreateWindow("Learn OpenGL", 1024, 768, SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+  appState->width = 1024;
+  appState->height = 768;
+  appState->window = SDL_CreateWindow("Learn OpenGL", appState->width, appState->height,
+                                      SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
   if (!appState->window) {
     SDL_Log("Failed to create window: %s", SDL_GetError());
     return SDL_APP_FAILURE;
@@ -66,7 +68,12 @@ SDL_AppResult SDL_AppEvent(void *state, SDL_Event *event) {
       return SDL_APP_SUCCESS;
     }
     case SDL_EVENT_WINDOW_RESIZED: {
+      appState->width = event->window.data1;
+      appState->height = event->window.data2;
       glViewport(0, 0, event->window.data1, event->window.data2);
+      if (appState->CurrentApplication()) {
+        appState->CurrentApplication()->HandleResize(event->window.data1, event->window.data2);
+      }
       break;
     }
     case SDL_EVENT_KEY_DOWN: {

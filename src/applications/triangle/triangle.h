@@ -9,7 +9,7 @@ class TriangleApplication : public Application {
   std::unique_ptr<Shader> mShader;
 
 public:
-  bool Load() override;
+  bool Load(int width, int height) override;
 
   void UnLoad() override;
 

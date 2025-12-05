@@ -7,9 +7,10 @@
 class CubeApplication : public Application {
   GLuint mVao, mVbo;
   std::unique_ptr<Shader> mShader;
+  glm::mat4 mProjection;
 
 public:
-  bool Load() override;
+  bool Load(int width, int height) override;
 
   void UnLoad() override;
 

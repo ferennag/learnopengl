@@ -9,6 +9,7 @@
 struct AppState {
   SDL_Window *window;
   SDL_GLContext glContext;
+  int width, height;
   std::vector<std::unique_ptr<Application>> applications;
   int currentApplication;
   int selectedApplication;
@@ -31,7 +32,7 @@ struct AppState {
 
       currentApplication = selectedApplication;
 
-      if (!applications[currentApplication]->Load()) {
+      if (!applications[currentApplication]->Load(width, height)) {
         SDL_Log("Failed to initialize application %s!", applications[currentApplication]->GetName().c_str());
         return false;
       }

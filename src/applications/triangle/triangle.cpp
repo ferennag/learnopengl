@@ -13,7 +13,9 @@ static const Vertex vertices[]{
     {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
 };
 
-bool TriangleApplication::Load() {
+bool TriangleApplication::Load(int width, int height) {
+  Application::Load(width, height);
+
   if (!mShader) {
     mShader = Shader::Load("assets/shaders/triangle.vert", "assets/shaders/triangle.frag");
     if (!mShader) {

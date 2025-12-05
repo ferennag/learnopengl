@@ -7,10 +7,17 @@
 #include <string>
 
 class Application {
+protected:
+  int mWidth, mHeight;
+
+  float GetAspectRatio() const;
+
 public:
   virtual ~Application() = default;
 
-  virtual bool Load() = 0;
+  virtual void HandleResize(int width, int height);
+
+  virtual bool Load(int width, int height);
 
   virtual void UnLoad() = 0;
 
