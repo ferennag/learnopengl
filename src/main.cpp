@@ -65,6 +65,8 @@ SDL_AppResult SDL_AppInit(void **state, int argc, char **argv) {
 SDL_AppResult SDL_AppEvent(void *state, SDL_Event *event) {
   AppState *appState = static_cast<AppState *>(state);
 
+  // Note: If this method returns true, that means ImGui is handling the mouse/keyboard event,
+  // so we want to stop propagating it to the app
   if (appState->gui->HandleEvent(event)) {
     return SDL_APP_CONTINUE;
   }
