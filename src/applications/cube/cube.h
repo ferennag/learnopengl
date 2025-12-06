@@ -7,7 +7,7 @@
 #include <memory>
 
 class CubeApplication : public Application {
-  GLuint mVao, mVbo;
+  GLuint mVao, mVbo, mEbo, mTexture;
   std::unique_ptr<Shader> mShader;
   glm::mat4 mProjection;
   std::unique_ptr<Camera> mCamera;

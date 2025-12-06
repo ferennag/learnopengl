@@ -50,7 +50,7 @@ SDL_AppResult SDL_AppInit(void **state, int argc, char **argv) {
   appState->applications.push_back(std::make_unique<CubeApplication>());
 
   // -1 will force the app to reload the selected application
-  appState->selectedApplication = 0;
+  appState->selectedApplication = appState->applications.size() - 1;
   appState->currentApplication = -1;
 
   appState->gui = std::make_unique<Gui>(appState->window, appState->glContext);
