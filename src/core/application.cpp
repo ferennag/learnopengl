@@ -1,6 +1,8 @@
 #include "application.h"
 #include <GL/glew.h>
 
+#define BUFFER_OFFSET(offset) ((void *)(offset))
+
 bool Application::Initialize() {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL Error: %s", SDL_GetError());
@@ -38,21 +40,56 @@ bool Application::Initialize() {
         return false;
     }
 
+    static const float vertices[][2] = {
+        {-0.90f, -0.90f},
+        {0.85f, -0.90f},
+        {-0.90f, 0.85f},
+        {0.90f, -0.85f},
+        {0.90f, 0.90f},
+        {-0.85f, 0.90f},
+    };
+
+    mShader = Shader::Load("basic");
+    if (!mShader) {
+        return false;
+    }
+
+    glCreateVertexArrays(1, &mVao);
+    glBindVertexArray(mVao);
+    glCreateBuffers(1, &mVbo);
+    glNamedBufferStorage(mVbo, sizeof(vertices), vertices, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), BUFFER_OFFSET(0));
+    glEnableVertexAttribArray(0);
+
     return true;
 }
 
 Application::~Application() {
     if (mSdlInitialized) {
+        glDeleteVertexArrays(1, &mVao);
+        glDeleteBuffers(1, &mVbo);
         SDL_Quit();
     }
+}
+
+void Application::Resize(int width, int height) {
+    glViewport(0, 0, width, height);
 }
 
 void Application::Run() {
     mRunning = true;
     while (mRunning) {
         ProcessEvents();
+
         glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        mShader->Bind();
+        glBindVertexArray(mVao);
+        glDrawArrays(GL_TRIANGLES, 0, 9);
+        mShader->Unbind();
+
         SDL_GL_SwapWindow(mWindow);
     }
 }
@@ -66,6 +103,7 @@ void Application::ProcessEvents() {
                 break;
             }
             case SDL_EVENT_WINDOW_RESIZED: {
+                Resize(event.window.data1, event.window.data2);
                 break;
             }
             case SDL_EVENT_KEY_DOWN: {
