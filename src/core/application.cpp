@@ -89,6 +89,10 @@ void Application::Run() {
         float background[] = {0.1f, 0.1f, 0.2f, 1.0f};
         glClearBufferfv(GL_COLOR, 0, background);
 
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+        glCullFace(GL_BACK);
+
         mShader->Bind();
         mShader->UniformMat4("Projection", mProjection);
         mShader->UniformMat4("View", mView);
