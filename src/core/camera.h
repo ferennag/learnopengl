@@ -17,14 +17,20 @@ class Camera {
     void Update(float delta);
 
     void MouseMotion(float x, float y, float deltaX, float deltaY);
-    void SetPosition(const glm::vec3 &position);
     void BindCameraData(int location) const;
+
+    void SetPosition(const glm::vec3 &position);
     glm::vec3 GetPosition() const;
+
+    void SetFov(const float fov);
+    float GetFov() const;
+
     glm::mat4 GetViewMatrix() const;
 
   private:
     glm::mat4 projection;
     glm::vec3 mPosition, mDirection, mUp, mRight;
+    float mFov, mAspect;
     CameraData mCameraData;
     GLuint mCameraDataUbo;
 

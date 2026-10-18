@@ -66,6 +66,7 @@ void Application::InitializeSettings() {
     mSettings.lightPosition = glm::vec3(0, 100, 100);
     mSettings.models = Model::GetAvailable();
     mSettings.selectedModel = *mSettings.models.begin();
+    mSettings.camera = mCamera.get();
     GrabMouse(false);
 }
 

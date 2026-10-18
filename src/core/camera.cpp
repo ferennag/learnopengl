@@ -13,6 +13,8 @@ Camera::Camera(const glm::vec3 &position) {
     mUp = glm::vec3(0.0f, 1.0f, 0.0f);
     mDirection = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
     mRight = glm::cross(mDirection, mUp);
+    mFov = 45.0f;
+    mAspect = 1.0f;
 
     glCreateBuffers(1, &mCameraDataUbo);
     glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
@@ -20,7 +22,8 @@ Camera::Camera(const glm::vec3 &position) {
 }
 
 void Camera::HandleResize(int width, int height) {
-    mCameraData.projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 1000.0f);
+    mAspect = (float)width / (float)height;
+    mCameraData.projection = glm::perspective(glm::radians(mFov), mAspect, 0.1f, 1000.0f);
     glViewport(0, 0, width, height);
     UpdateCameraData();
 }
@@ -31,6 +34,16 @@ void Camera::SetPosition(const glm::vec3 &position) {
 
 glm::vec3 Camera::GetPosition() const {
     return mPosition;
+}
+
+void Camera::SetFov(const float fov) {
+    mFov = fov;
+    mCameraData.projection = glm::perspective(glm::radians(mFov), mAspect, 0.1f, 1000.0f);
+    UpdateCameraData();
+}
+
+float Camera::GetFov() const {
+    return mFov;
 }
 
 void Camera::Update(float delta) {

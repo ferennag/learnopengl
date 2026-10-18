@@ -49,20 +49,33 @@ void UI::Render(UIData *data) {
     {
         ImGui::Begin("Settings");
         ImGui::Text("%.1f FPS (%.3f ms/frame)", 1000.0f / io.Framerate, io.Framerate);
-        if (ImGui::BeginCombo("Model", data->selectedModel.c_str())) {
-            for (const std::string &model : data->models) {
-                bool isSelected = model == data->selectedModel;
-                if (ImGui::Selectable(model.c_str(), isSelected)) {
-                    data->selectedModel = model;
-                }
 
-                if (isSelected) {
-                    ImGui::SetItemDefaultFocus();
+        if (ImGui::CollapsingHeader("Model settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (ImGui::BeginCombo("Model", data->selectedModel.c_str())) {
+                for (const std::string &model : data->models) {
+                    bool isSelected = model == data->selectedModel;
+                    if (ImGui::Selectable(model.c_str(), isSelected)) {
+                        data->selectedModel = model;
+                    }
+
+                    if (isSelected) {
+                        ImGui::SetItemDefaultFocus();
+                    }
                 }
+                ImGui::EndCombo();
             }
-            ImGui::EndCombo();
         }
-        ImGui::SliderFloat3("Light Position", &data->lightPosition[0], -500, 500);
+
+        if (ImGui::CollapsingHeader("Camera settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+            float fov = data->camera->GetFov();
+            if (ImGui::SliderFloat("FOV", &fov, 0.1f, 120.0f)) {
+                data->camera->SetFov(fov);
+            }
+        }
+
+        if (ImGui::CollapsingHeader("Light settings", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ImGui::SliderFloat3("Light Position", &data->lightPosition[0], -500, 500);
+        }
         ImGui::End();
     }
 
