@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 #include <glm/glm.hpp>
 #include "shader.h"
+#include "model.h"
 
 struct CameraData {
     glm::mat4 projection, view;
@@ -23,10 +24,9 @@ class Application {
     SDL_Window *mWindow = nullptr;
 
     std::shared_ptr<Shader> mShader = nullptr;
-    GLuint mVao, mVbo;
-
     GLuint mCameraDataUbo;
     CameraData mCameraData;
+    std::unique_ptr<Model> mModel = nullptr;
 
     void ProcessEvents();
 };

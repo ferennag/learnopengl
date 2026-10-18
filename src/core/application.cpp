@@ -1,6 +1,7 @@
 #include "application.h"
 #include <GL/glew.h>
 #include <glm/ext.hpp>
+#include "model.h"
 
 #define BUFFER_OFFSET(offset) ((void *)(offset))
 
@@ -41,27 +42,10 @@ bool Application::Initialize() {
         return false;
     }
 
-    static const float vertices[][2] = {
-        {-0.90f, -0.90f},
-        {0.85f, -0.90f},
-        {-0.90f, 0.85f},
-        {0.90f, -0.85f},
-        {0.90f, 0.90f},
-        {-0.85f, 0.90f},
-    };
-
     mShader = Shader::Load("basic");
     if (!mShader) {
         return false;
     }
-
-    glCreateVertexArrays(1, &mVao);
-    glBindVertexArray(mVao);
-    glCreateBuffers(1, &mVbo);
-    glNamedBufferStorage(mVbo, sizeof(vertices), vertices, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, mVbo);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), BUFFER_OFFSET(0));
-    glEnableVertexAttribArray(0);
 
     mShader->Bind();
     glCreateBuffers(1, &mCameraDataUbo);
@@ -70,7 +54,12 @@ bool Application::Initialize() {
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, mCameraDataUbo);
 
     mCameraData.view =
-        glm::lookAt((glm::vec3){0.0f, 0.0f, 5.0f}, (glm::vec3){0.0f, 0.0f, 0.0f}, (glm::vec3){0.0f, 1.0f, 0.0f});
+        glm::lookAt((glm::vec3){0.0f, 100.0f, 400.0f}, (glm::vec3){0.0f, 0.0f, 0.0f}, (glm::vec3){0.0f, 1.0f, 0.0f});
+
+    mModel = Model::Load("dragon.obj");
+    if (!mModel) {
+        return false;
+    }
 
     return true;
 }
@@ -78,14 +67,12 @@ bool Application::Initialize() {
 Application::~Application() {
     if (mSdlInitialized) {
         glDeleteBuffers(1, &mCameraDataUbo);
-        glDeleteVertexArrays(1, &mVao);
-        glDeleteBuffers(1, &mVbo);
         SDL_Quit();
     }
 }
 
 void Application::Resize(int width, int height) {
-    mCameraData.projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+    mCameraData.projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 10000.0f);
     glViewport(0, 0, width, height);
 
     glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
@@ -94,19 +81,29 @@ void Application::Resize(int width, int height) {
 
 void Application::Run() {
     mRunning = true;
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
+
+    auto previous = SDL_GetTicks();
     while (mRunning) {
         ProcessEvents();
+        auto current = SDL_GetTicks();
+        float delta = ((float)(current - previous)) / 1000.0f;
+        previous = current;
 
         float background[] = {0.1f, 0.1f, 0.2f, 1.0f};
+        float depth = 1.0f;
         glClearBufferfv(GL_COLOR, 0, background);
+        glClearBufferfv(GL_DEPTH, 0, &depth);
 
-        glEnable(GL_CULL_FACE);
-        glFrontFace(GL_CCW);
-        glCullFace(GL_BACK);
+        mModel->Rotate(glm::radians(10.0f * delta), glm::vec3(0.0f, 1.0f, 0.0f));
 
         mShader->Bind();
-        glBindVertexArray(mVao);
-        glDrawArrays(GL_TRIANGLES, 0, 9);
+        mModel->Draw(mShader);
         mShader->Unbind();
 
         SDL_GL_SwapWindow(mWindow);
