@@ -1,5 +1,6 @@
 #include "application.h"
 #include <GL/glew.h>
+#include <glm/ext.hpp>
 
 #define BUFFER_OFFSET(offset) ((void *)(offset))
 
@@ -62,6 +63,8 @@ bool Application::Initialize() {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), BUFFER_OFFSET(0));
     glEnableVertexAttribArray(0);
 
+    mView = glm::lookAt((glm::vec3){0.0f, 0.0f, 5.0f}, (glm::vec3){0.0f, 0.0f, 0.0f}, (glm::vec3){0.0f, 1.0f, 0.0f});
+
     return true;
 }
 
@@ -74,6 +77,7 @@ Application::~Application() {
 }
 
 void Application::Resize(int width, int height) {
+    mProjection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
     glViewport(0, 0, width, height);
 }
 
@@ -82,10 +86,12 @@ void Application::Run() {
     while (mRunning) {
         ProcessEvents();
 
-        glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        float background[] = {0.1f, 0.1f, 0.2f, 1.0f};
+        glClearBufferfv(GL_COLOR, 0, background);
 
         mShader->Bind();
+        mShader->UniformMat4("Projection", mProjection);
+        mShader->UniformMat4("View", mView);
         glBindVertexArray(mVao);
         glDrawArrays(GL_TRIANGLES, 0, 9);
         mShader->Unbind();

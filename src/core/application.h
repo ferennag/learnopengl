@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <SDL3/SDL.h>
+#include <glm/glm.hpp>
 #include "shader.h"
 
 class Application {
@@ -19,6 +20,8 @@ class Application {
 
     std::shared_ptr<Shader> mShader = nullptr;
     GLuint mVao, mVbo;
+
+    glm::mat4 mProjection, mView;
 
     void ProcessEvents();
 };
