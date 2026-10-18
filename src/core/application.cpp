@@ -63,13 +63,21 @@ bool Application::Initialize() {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), BUFFER_OFFSET(0));
     glEnableVertexAttribArray(0);
 
-    mView = glm::lookAt((glm::vec3){0.0f, 0.0f, 5.0f}, (glm::vec3){0.0f, 0.0f, 0.0f}, (glm::vec3){0.0f, 1.0f, 0.0f});
+    mShader->Bind();
+    glCreateBuffers(1, &mCameraDataUbo);
+    glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), nullptr, GL_DYNAMIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, mCameraDataUbo);
+
+    mCameraData.view =
+        glm::lookAt((glm::vec3){0.0f, 0.0f, 5.0f}, (glm::vec3){0.0f, 0.0f, 0.0f}, (glm::vec3){0.0f, 1.0f, 0.0f});
 
     return true;
 }
 
 Application::~Application() {
     if (mSdlInitialized) {
+        glDeleteBuffers(1, &mCameraDataUbo);
         glDeleteVertexArrays(1, &mVao);
         glDeleteBuffers(1, &mVbo);
         SDL_Quit();
@@ -77,8 +85,11 @@ Application::~Application() {
 }
 
 void Application::Resize(int width, int height) {
-    mProjection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+    mCameraData.projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
     glViewport(0, 0, width, height);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraData), &mCameraData);
 }
 
 void Application::Run() {
@@ -94,8 +105,6 @@ void Application::Run() {
         glCullFace(GL_BACK);
 
         mShader->Bind();
-        mShader->UniformMat4("Projection", mProjection);
-        mShader->UniformMat4("View", mView);
         glBindVertexArray(mVao);
         glDrawArrays(GL_TRIANGLES, 0, 9);
         mShader->Unbind();

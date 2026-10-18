@@ -97,6 +97,10 @@ Shader::~Shader() {
     glDeleteProgram(mId);
 }
 
+GLuint Shader::GetUniformBufferIndex(const std::string &name) {
+    return glGetUniformBlockIndex(mId, name.c_str());
+}
+
 void Shader::Bind() const {
     glUseProgram(mId);
 }

@@ -1,7 +1,9 @@
 #version 460 core
 
-uniform mat4 Projection;
-uniform mat4 View;
+layout(std140) uniform Camera {
+  mat4 Projection;
+  mat4 View;
+};
 
 layout(location = 0) in vec2 vPosition;
 

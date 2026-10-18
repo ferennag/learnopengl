@@ -5,6 +5,10 @@
 #include <glm/glm.hpp>
 #include "shader.h"
 
+struct CameraData {
+    glm::mat4 projection, view;
+};
+
 class Application {
   public:
     bool Initialize();
@@ -21,7 +25,8 @@ class Application {
     std::shared_ptr<Shader> mShader = nullptr;
     GLuint mVao, mVbo;
 
-    glm::mat4 mProjection, mView;
+    GLuint mCameraDataUbo;
+    CameraData mCameraData;
 
     void ProcessEvents();
 };

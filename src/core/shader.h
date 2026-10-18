@@ -13,6 +13,7 @@ class Shader {
     void Bind() const;
     void Unbind() const;
 
+    GLuint GetUniformBufferIndex(const std::string &name);
     void UniformMat4(const std::string &name, glm::mat4 value);
 
   private:
