@@ -109,6 +109,16 @@ void Shader::Unbind() const {
     glUseProgram(0);
 }
 
+void Shader::UniformVec3(const std::string &name, glm::vec3 value) const {
+    GLint location = glGetUniformLocation(mId, name.c_str());
+    if (location < 0) {
+        SDL_Log("Uniform location not found: %s", name.c_str());
+        return;
+    }
+
+    glUniform3fv(location, 1, &value[0]);
+}
+
 void Shader::UniformMat4(const std::string &name, glm::mat4 value) const {
     GLint location = glGetUniformLocation(mId, name.c_str());
     if (location < 0) {

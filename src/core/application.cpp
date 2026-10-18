@@ -1,6 +1,8 @@
 #include "application.h"
 #include <GL/glew.h>
 #include <glm/ext.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 #include "model.h"
 #include "keyboard.h"
 
@@ -64,13 +66,17 @@ bool Application::Initialize() {
         return false;
     }
 
+    InitializeSettings();
+    return true;
+}
+
+void Application::InitializeSettings() {
+    mSettings.lightPosition = glm::vec3(0, 100, 100);
     mSettings.models = Model::GetAvailable();
     mSettings.selectedModel = *mSettings.models.begin();
     UpdateModel();
 
     GrabMouse(false);
-
-    return true;
 }
 
 Application::~Application() {
@@ -131,15 +137,15 @@ void Application::Run() {
         UpdateCameraData();
         UpdateModel();
 
-        // Render
+        // Clear
         float background[] = {0.1f, 0.1f, 0.2f, 1.0f};
         float depth = 1.0f;
         glClearBufferfv(GL_COLOR, 0, background);
         glClearBufferfv(GL_DEPTH, 0, &depth);
 
-        // mModel->Rotate(glm::radians(10.0f * delta), glm::vec3(0.0f, 1.0f, 0.0f));
-
+        // Render
         mShader->Bind();
+        mShader->UniformVec3("LightPosition", mSettings.lightPosition);
         mModel->Draw(mShader);
         mShader->Unbind();
         mUi.Render(&mSettings);

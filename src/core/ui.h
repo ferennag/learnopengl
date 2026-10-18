@@ -4,10 +4,12 @@
 #include <SDL3/SDL.h>
 #include <vector>
 #include <string>
+#include <glm/glm.hpp>
 
 struct UIData {
     std::string selectedModel;
     std::vector<std::string> models;
+    glm::vec3 lightPosition;
 };
 
 class UI {

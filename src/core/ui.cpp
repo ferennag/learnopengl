@@ -62,6 +62,7 @@ void UI::Render(UIData *data) {
             }
             ImGui::EndCombo();
         }
+        ImGui::SliderFloat3("Light Position", &data->lightPosition[0], -500, 500);
         ImGui::End();
     }
 

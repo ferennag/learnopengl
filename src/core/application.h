@@ -36,6 +36,7 @@ class Application {
     CameraData mCameraData;
     std::unique_ptr<Model> mModel = nullptr;
 
+    void InitializeSettings();
     void GrabMouse(bool grab);
     void ProcessEvents();
     void UpdateCameraData();
