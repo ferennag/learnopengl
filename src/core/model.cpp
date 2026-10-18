@@ -127,7 +127,9 @@ Model::~Model() {
 void Model::Draw(std::shared_ptr<Shader> shader) const {
     for (const auto &mesh : mMeshes) {
         glm::mat4 transform = mTransform * mesh.transform;
+        glm::mat3 normal = glm::transpose(glm::inverse(transform));
         shader->UniformMat4("Model", transform);
+        shader->UniformMat3("Normal", normal);
         glBindVertexArray(mesh.vao);
         glDrawElements(GL_TRIANGLES, mesh.indices.size(), GL_UNSIGNED_INT, nullptr);
     }

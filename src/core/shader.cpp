@@ -109,7 +109,7 @@ void Shader::Unbind() const {
     glUseProgram(0);
 }
 
-void Shader::UniformMat4(const std::string &name, glm::mat4 value) {
+void Shader::UniformMat4(const std::string &name, glm::mat4 value) const {
     GLint location = glGetUniformLocation(mId, name.c_str());
     if (location < 0) {
         SDL_Log("Uniform location not found: %s", name.c_str());
@@ -117,4 +117,14 @@ void Shader::UniformMat4(const std::string &name, glm::mat4 value) {
     }
 
     glUniformMatrix4fv(location, 1, GL_FALSE, &(value[0][0]));
+}
+
+void Shader::UniformMat3(const std::string &name, glm::mat3 value) const {
+    GLint location = glGetUniformLocation(mId, name.c_str());
+    if (location < 0) {
+        SDL_Log("Uniform location not found: %s", name.c_str());
+        return;
+    }
+
+    glUniformMatrix3fv(location, 1, GL_FALSE, &(value[0][0]));
 }

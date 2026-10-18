@@ -14,7 +14,8 @@ class Shader {
     void Unbind() const;
 
     GLuint GetUniformBufferIndex(const std::string &name);
-    void UniformMat4(const std::string &name, glm::mat4 value);
+    void UniformMat3(const std::string &name, glm::mat3 value) const;
+    void UniformMat4(const std::string &name, glm::mat4 value) const;
 
   private:
     GLuint mId;
