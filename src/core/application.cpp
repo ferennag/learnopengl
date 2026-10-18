@@ -65,7 +65,11 @@ bool Application::Initialize() {
         return false;
     }
 
-    SDL_SetWindowRelativeMouseMode(mWindow, true);
+    if (!mUi.Initialize()) {
+        return false;
+    }
+
+    GrabMouse(true);
 
     return true;
 }
@@ -90,6 +94,11 @@ void Application::UpdateCameraData() {
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraData), &mCameraData);
 }
 
+void Application::GrabMouse(bool grab) {
+    SDL_SetWindowRelativeMouseMode(mWindow, grab);
+    mMouseGrabbed = grab;
+}
+
 void Application::Run() {
     mRunning = true;
 
@@ -108,6 +117,7 @@ void Application::Run() {
         previous = current;
 
         // Update
+        mUi.Update();
         mCamera.Update(delta);
         UpdateCameraData();
 
@@ -123,6 +133,7 @@ void Application::Run() {
         mModel->Draw(mShader);
         mShader->Unbind();
 
+        mUi.Render();
         SDL_GL_SwapWindow(mWindow);
     }
 }
@@ -130,6 +141,10 @@ void Application::Run() {
 void Application::ProcessEvents() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
+        if (!mMouseGrabbed) {
+            mUi.HandleEvent(&event);
+        }
+
         switch (event.type) {
             case SDL_EVENT_QUIT: {
                 mRunning = false;
@@ -140,13 +155,22 @@ void Application::ProcessEvents() {
                 break;
             }
             case SDL_EVENT_MOUSE_MOTION: {
-                mCamera.MouseMotion(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
+                if (mMouseGrabbed) {
+                    mCamera.MouseMotion(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
+                }
                 break;
             }
             case SDL_EVENT_KEY_UP:
             case SDL_EVENT_KEY_DOWN: {
-                Keyboard::GetInstance().HandleEvent(&event.key);
+                if (mMouseGrabbed) {
+                    Keyboard::GetInstance().HandleEvent(&event.key);
+                }
                 switch (event.key.key) {
+                    case SDLK_F1:
+                        if (event.key.down) {
+                            GrabMouse(!mMouseGrabbed);
+                        }
+                        break;
                     case SDLK_ESCAPE:
                         mRunning = false;
                         break;

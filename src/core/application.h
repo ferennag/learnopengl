@@ -6,6 +6,7 @@
 #include "shader.h"
 #include "model.h"
 #include "camera.h"
+#include "ui.h"
 
 struct CameraData {
     glm::mat4 projection, view;
@@ -22,9 +23,11 @@ class Application {
 
   private:
     bool mSdlInitialized = false;
+    bool mMouseGrabbed = false;
     bool mRunning = false;
     SDL_Window *mWindow = nullptr;
 
+    UI mUi;
     Camera mCamera;
 
     std::shared_ptr<Shader> mShader = nullptr;
@@ -32,6 +35,7 @@ class Application {
     CameraData mCameraData;
     std::unique_ptr<Model> mModel = nullptr;
 
+    void GrabMouse(bool grab);
     void ProcessEvents();
     void UpdateCameraData();
 };
