@@ -23,7 +23,7 @@ std::unique_ptr<Model> Model::Load(const std::string &file) {
     const aiScene *scene =
         importer.ReadFile(filename.c_str(),
                           aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
-                              aiProcess_SortByPType | aiProcess_GenNormals);
+                              aiProcess_SortByPType | aiProcess_GenSmoothNormals);
     if (!scene) {
         SDL_Log("Failed to load object: %s", filename.c_str());
         return nullptr;

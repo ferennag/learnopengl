@@ -2,7 +2,7 @@
 #include "keyboard.h"
 #include <glm/ext.hpp>
 
-#define SPEED 1000.0f
+#define SPEED 800.0f
 #define LOOK_SENSITIVITY 0.02f
 
 Camera::Camera() : Camera(glm::vec3(0.0f, 0.0f, 0.0f)) {

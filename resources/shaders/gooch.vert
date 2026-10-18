@@ -17,5 +17,7 @@ layout(location = 1) out vec3 normal;
 void main() {
   gl_Position = Projection * View * Model * vec4(vPosition, 1.0);
   position = (Model * vec4(vPosition, 1.0)).xyz;
-  normal = normalize(mat3(Model) * vNormal);
+
+  mat3 NormalMatrix = mat3(transpose(inverse(Model)));
+  normal = normalize(NormalMatrix * vNormal);
 }

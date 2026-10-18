@@ -117,7 +117,7 @@ void Application::Run() {
         glClearBufferfv(GL_COLOR, 0, background);
         glClearBufferfv(GL_DEPTH, 0, &depth);
 
-        mModel->Rotate(glm::radians(10.0f * delta), glm::vec3(0.0f, 1.0f, 0.0f));
+        // mModel->Rotate(glm::radians(10.0f * delta), glm::vec3(0.0f, 1.0f, 0.0f));
 
         mShader->Bind();
         mModel->Draw(mShader);
