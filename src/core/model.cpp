@@ -134,6 +134,7 @@ Model::~Model() {
         glDeleteBuffers(1, &mesh.vbo);
         glDeleteBuffers(1, &mesh.ebo);
     }
+    SDL_Log("Model %s unloaded", mName.c_str());
 }
 
 void Model::Draw(std::shared_ptr<Shader> shader) const {

@@ -27,9 +27,7 @@ class Model {
 
     ~Model();
     void Draw(std::shared_ptr<Shader> shader) const;
-
     void Rotate(float angle, const glm::vec3 &axis);
-
     std::string GetName() const;
 
   private:

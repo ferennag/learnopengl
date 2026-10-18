@@ -142,8 +142,8 @@ void Application::Run() {
         mShader->Bind();
         mModel->Draw(mShader);
         mShader->Unbind();
-
         mUi.Render(&mSettings);
+
         SDL_GL_SwapWindow(mWindow);
     }
 }
