@@ -1,12 +1,19 @@
 #version 460 core
 
-layout(location = 0) in vec3 vNormal;
+layout(std140) uniform Camera {
+  mat4 Projection;
+  mat4 View;
+  vec3 CameraPosition;
+};
+
+layout(location = 0) in vec3 vPosition;
+layout(location = 1) in vec3 vNormal;
 
 layout(location = 0) out vec4 fColor;
 
 void main() {
-  vec3 L = normalize(vec3(0, 300, 300));
-  vec3 V = normalize(vec3(0, 100, 400));
+  vec3 L = normalize(vec3(0, 300, 300) - vPosition);
+  vec3 V = normalize(CameraPosition - vPosition);
   vec3 N = vNormal;
 
   vec3 color = vec3(0.2, 0.2, 0.8);

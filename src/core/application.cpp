@@ -2,6 +2,7 @@
 #include <GL/glew.h>
 #include <glm/ext.hpp>
 #include "model.h"
+#include "keyboard.h"
 
 #define BUFFER_OFFSET(offset) ((void *)(offset))
 
@@ -42,7 +43,9 @@ bool Application::Initialize() {
         return false;
     }
 
-    mShader = Shader::Load("basic");
+    SDL_GL_SetSwapInterval(1);
+
+    mShader = Shader::Load("gooch");
     if (!mShader) {
         return false;
     }
@@ -53,13 +56,16 @@ bool Application::Initialize() {
     glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), nullptr, GL_DYNAMIC_DRAW);
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, mCameraDataUbo);
 
-    mCameraData.view =
-        glm::lookAt((glm::vec3){0.0f, 100.0f, 400.0f}, (glm::vec3){0.0f, 0.0f, 0.0f}, (glm::vec3){0.0f, 1.0f, 0.0f});
+    mCamera.SetPosition(glm::vec3(0.0f, 20.0f, 400.0f));
+
+    mCameraData.view = mCamera.GetViewMatrix();
 
     mModel = Model::Load("dragon.obj");
     if (!mModel) {
         return false;
     }
+
+    SDL_SetWindowRelativeMouseMode(mWindow, true);
 
     return true;
 }
@@ -72,9 +78,14 @@ Application::~Application() {
 }
 
 void Application::Resize(int width, int height) {
-    mCameraData.projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 10000.0f);
+    mCameraData.projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 1000.0f);
     glViewport(0, 0, width, height);
+    UpdateCameraData();
+}
 
+void Application::UpdateCameraData() {
+    mCameraData.position = mCamera.GetPosition();
+    mCameraData.view = mCamera.GetViewMatrix();
     glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraData), &mCameraData);
 }
@@ -90,11 +101,17 @@ void Application::Run() {
 
     auto previous = SDL_GetTicks();
     while (mRunning) {
+        // Events
         ProcessEvents();
         auto current = SDL_GetTicks();
         float delta = ((float)(current - previous)) / 1000.0f;
         previous = current;
 
+        // Update
+        mCamera.Update(delta);
+        UpdateCameraData();
+
+        // Render
         float background[] = {0.1f, 0.1f, 0.2f, 1.0f};
         float depth = 1.0f;
         glClearBufferfv(GL_COLOR, 0, background);
@@ -122,7 +139,13 @@ void Application::ProcessEvents() {
                 Resize(event.window.data1, event.window.data2);
                 break;
             }
+            case SDL_EVENT_MOUSE_MOTION: {
+                mCamera.MouseMotion(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
+                break;
+            }
+            case SDL_EVENT_KEY_UP:
             case SDL_EVENT_KEY_DOWN: {
+                Keyboard::GetInstance().HandleEvent(&event.key);
                 switch (event.key.key) {
                     case SDLK_ESCAPE:
                         mRunning = false;

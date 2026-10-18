@@ -5,9 +5,11 @@
 #include <glm/glm.hpp>
 #include "shader.h"
 #include "model.h"
+#include "camera.h"
 
 struct CameraData {
     glm::mat4 projection, view;
+    glm::vec3 position;
 };
 
 class Application {
@@ -23,10 +25,13 @@ class Application {
     bool mRunning = false;
     SDL_Window *mWindow = nullptr;
 
+    Camera mCamera;
+
     std::shared_ptr<Shader> mShader = nullptr;
     GLuint mCameraDataUbo;
     CameraData mCameraData;
     std::unique_ptr<Model> mModel = nullptr;
 
     void ProcessEvents();
+    void UpdateCameraData();
 };
