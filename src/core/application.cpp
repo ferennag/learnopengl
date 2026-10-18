@@ -52,15 +52,7 @@ bool Application::Initialize() {
         return false;
     }
 
-    mShader->Bind();
-    glCreateBuffers(1, &mCameraDataUbo);
-    glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), nullptr, GL_DYNAMIC_DRAW);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, mCameraDataUbo);
-
-    mCamera.SetPosition(glm::vec3(0.0f, 20.0f, 400.0f));
-
-    mCameraData.view = mCamera.GetViewMatrix();
+    mCamera = std::make_unique<Camera>(glm::vec3(0.0f, 20.0f, 400.0f));
 
     if (!mUi.Initialize()) {
         return false;
@@ -74,29 +66,13 @@ void Application::InitializeSettings() {
     mSettings.lightPosition = glm::vec3(0, 100, 100);
     mSettings.models = Model::GetAvailable();
     mSettings.selectedModel = *mSettings.models.begin();
-    UpdateModel();
-
     GrabMouse(false);
 }
 
 Application::~Application() {
     if (mSdlInitialized) {
-        glDeleteBuffers(1, &mCameraDataUbo);
         SDL_Quit();
     }
-}
-
-void Application::Resize(int width, int height) {
-    mCameraData.projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 1000.0f);
-    glViewport(0, 0, width, height);
-    UpdateCameraData();
-}
-
-void Application::UpdateCameraData() {
-    mCameraData.position = mCamera.GetPosition();
-    mCameraData.view = mCamera.GetViewMatrix();
-    glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraData), &mCameraData);
 }
 
 void Application::UpdateModel() {
@@ -133,8 +109,7 @@ void Application::Run() {
 
         // Update
         mUi.Update();
-        mCamera.Update(delta);
-        UpdateCameraData();
+        mCamera->Update(delta);
         UpdateModel();
 
         // Clear
@@ -146,6 +121,7 @@ void Application::Run() {
         // Render
         mShader->Bind();
         mShader->UniformVec3("LightPosition", mSettings.lightPosition);
+        mCamera->BindCameraData(0);
         mModel->Draw(mShader);
         mShader->Unbind();
         mUi.Render(&mSettings);
@@ -167,12 +143,12 @@ void Application::ProcessEvents() {
                 break;
             }
             case SDL_EVENT_WINDOW_RESIZED: {
-                Resize(event.window.data1, event.window.data2);
+                mCamera->HandleResize(event.window.data1, event.window.data2);
                 break;
             }
             case SDL_EVENT_MOUSE_MOTION: {
                 if (mMouseGrabbed) {
-                    mCamera.MouseMotion(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
+                    mCamera->MouseMotion(event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
                 }
                 break;
             }

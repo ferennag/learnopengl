@@ -8,17 +8,11 @@
 #include "camera.h"
 #include "ui.h"
 
-struct CameraData {
-    glm::mat4 projection, view;
-    glm::vec3 position;
-};
-
 class Application {
   public:
     bool Initialize();
     ~Application();
 
-    void Resize(int width, int height);
     void Run();
 
   private:
@@ -29,16 +23,13 @@ class Application {
 
     UI mUi;
     UIData mSettings;
-    Camera mCamera;
+    std::unique_ptr<Camera> mCamera;
 
     std::shared_ptr<Shader> mShader = nullptr;
-    GLuint mCameraDataUbo;
-    CameraData mCameraData;
     std::unique_ptr<Model> mModel = nullptr;
 
     void InitializeSettings();
     void GrabMouse(bool grab);
     void ProcessEvents();
-    void UpdateCameraData();
     void UpdateModel();
 };

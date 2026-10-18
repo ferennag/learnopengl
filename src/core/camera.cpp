@@ -13,6 +13,16 @@ Camera::Camera(const glm::vec3 &position) {
     mUp = glm::vec3(0.0f, 1.0f, 0.0f);
     mDirection = glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f));
     mRight = glm::cross(mDirection, mUp);
+
+    glCreateBuffers(1, &mCameraDataUbo);
+    glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraData), nullptr, GL_DYNAMIC_DRAW);
+}
+
+void Camera::HandleResize(int width, int height) {
+    mCameraData.projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 1000.0f);
+    glViewport(0, 0, width, height);
+    UpdateCameraData();
 }
 
 void Camera::SetPosition(const glm::vec3 &position) {
@@ -51,6 +61,19 @@ void Camera::Update(float delta) {
         vector *= delta * SPEED;
         mPosition += vector;
     }
+
+    UpdateCameraData();
+}
+
+void Camera::BindCameraData(int location) const {
+    glBindBufferBase(GL_UNIFORM_BUFFER, location, mCameraDataUbo);
+}
+
+void Camera::UpdateCameraData() {
+    mCameraData.position = GetPosition();
+    mCameraData.view = GetViewMatrix();
+    glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraData), &mCameraData);
 }
 
 void Camera::MouseMotion(float x, float y, float deltaX, float deltaY) {
