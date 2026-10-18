@@ -60,16 +60,15 @@ bool Application::Initialize() {
 
     mCameraData.view = mCamera.GetViewMatrix();
 
-    mModel = Model::Load("dragon.obj");
-    if (!mModel) {
-        return false;
-    }
-
     if (!mUi.Initialize()) {
         return false;
     }
 
-    GrabMouse(true);
+    mSettings.models = Model::GetAvailable();
+    mSettings.selectedModel = *mSettings.models.begin();
+    UpdateModel();
+
+    GrabMouse(false);
 
     return true;
 }
@@ -92,6 +91,16 @@ void Application::UpdateCameraData() {
     mCameraData.view = mCamera.GetViewMatrix();
     glBindBuffer(GL_UNIFORM_BUFFER, mCameraDataUbo);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraData), &mCameraData);
+}
+
+void Application::UpdateModel() {
+    if (!mModel || mModel->GetName() != mSettings.selectedModel) {
+        if (mModel) {
+            mModel.reset();
+        }
+
+        mModel = Model::Load(mSettings.selectedModel);
+    }
 }
 
 void Application::GrabMouse(bool grab) {
@@ -120,6 +129,7 @@ void Application::Run() {
         mUi.Update();
         mCamera.Update(delta);
         UpdateCameraData();
+        UpdateModel();
 
         // Render
         float background[] = {0.1f, 0.1f, 0.2f, 1.0f};
@@ -133,7 +143,7 @@ void Application::Run() {
         mModel->Draw(mShader);
         mShader->Unbind();
 
-        mUi.Render();
+        mUi.Render(&mSettings);
         SDL_GL_SwapWindow(mWindow);
     }
 }

@@ -2,6 +2,13 @@
 
 #include <GL/glew.h>
 #include <SDL3/SDL.h>
+#include <vector>
+#include <string>
+
+struct UIData {
+    std::string selectedModel;
+    std::vector<std::string> models;
+};
 
 class UI {
   public:
@@ -10,8 +17,8 @@ class UI {
 
     void HandleEvent(SDL_Event *event);
     void Update();
-    void Render();
+    void Render(UIData *data);
 
   private:
-    bool mShowDemoWindow = true;
+    bool mShowDemoWindow = false;
 };

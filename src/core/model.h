@@ -22,6 +22,7 @@ struct Mesh {
 
 class Model {
   public:
+    static std::vector<std::string> GetAvailable();
     static std::unique_ptr<Model> Load(const std::string &file);
 
     ~Model();
@@ -29,10 +30,13 @@ class Model {
 
     void Rotate(float angle, const glm::vec3 &axis);
 
+    std::string GetName() const;
+
   private:
+    std::string mName;
     glm::mat4 mTransform = glm::identity<glm::mat4>();
     std::vector<Mesh> mMeshes;
     glm::vec3 mMinBounds, mMaxBounds;
 
-    Model(const std::vector<Mesh> &meshes);
+    Model(const std::string &name, const std::vector<Mesh> &meshes);
 };

@@ -1,5 +1,6 @@
 #include "model.h"
 #include <SDL3/SDL_log.h>
+#include <SDL3/SDL_filesystem.h>
 #include <memory>
 #include <sstream>
 #include <glm/glm.hpp>
@@ -12,6 +13,17 @@
 
 static glm::mat4 ToGlmMatrix(const aiMatrix4x4 &m) {
     return glm::mat4(m.a1, m.b1, m.c1, m.d1, m.a2, m.b2, m.c2, m.d2, m.a3, m.b3, m.c3, m.d3, m.a4, m.b4, m.c4, m.d4);
+}
+
+std::vector<std::string> Model::GetAvailable() {
+    int count;
+    char **entries = SDL_GlobDirectory("resources/objects", nullptr, 0, &count);
+    std::vector<std::string> results;
+    for (int i = 0; i < count; ++i) {
+        results.push_back(std::string(entries[i]));
+    }
+    SDL_free(entries);
+    return results;
 }
 
 std::unique_ptr<Model> Model::Load(const std::string &file) {
@@ -80,10 +92,10 @@ std::unique_ptr<Model> Model::Load(const std::string &file) {
             filename.c_str(),
             meshes.size());
 
-    return std::unique_ptr<Model>(new Model(meshes));
+    return std::unique_ptr<Model>(new Model(file, meshes));
 }
 
-Model::Model(const std::vector<Mesh> &meshes) : mMeshes(meshes) {
+Model::Model(const std::string &name, const std::vector<Mesh> &meshes) : mName(name), mMeshes(meshes) {
     glm::vec3 minBounds(FLT_MAX);
     glm::vec3 maxBounds(-FLT_MAX);
 
@@ -140,4 +152,8 @@ void Model::Rotate(float angle, const glm::vec3 &axis) {
     mTransform = glm::translate(mTransform, center);
     mTransform = glm::rotate(mTransform, angle, axis);
     mTransform = glm::translate(mTransform, -center);
+}
+
+std::string Model::GetName() const {
+    return mName;
 }

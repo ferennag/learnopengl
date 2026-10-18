@@ -36,13 +36,33 @@ void UI::HandleEvent(SDL_Event *event) {
 void UI::Update() {
 }
 
-void UI::Render() {
+void UI::Render(UIData *data) {
+    auto &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
     if (mShowDemoWindow) {
         ImGui::ShowDemoWindow(&mShowDemoWindow);
+    }
+
+    {
+        ImGui::Begin("Settings");
+        ImGui::Text("%.1f FPS (%.3f ms/frame)", 1000.0f / io.Framerate, io.Framerate);
+        if (ImGui::BeginCombo("Model", data->selectedModel.c_str())) {
+            for (const std::string &model : data->models) {
+                bool isSelected = model == data->selectedModel;
+                if (ImGui::Selectable(model.c_str(), isSelected)) {
+                    data->selectedModel = model;
+                }
+
+                if (isSelected) {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::End();
     }
 
     ImGui::Render();

@@ -28,6 +28,7 @@ class Application {
     SDL_Window *mWindow = nullptr;
 
     UI mUi;
+    UIData mSettings;
     Camera mCamera;
 
     std::shared_ptr<Shader> mShader = nullptr;
@@ -38,4 +39,5 @@ class Application {
     void GrabMouse(bool grab);
     void ProcessEvents();
     void UpdateCameraData();
+    void UpdateModel();
 };
